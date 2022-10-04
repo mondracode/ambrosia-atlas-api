@@ -32,14 +32,14 @@ func (zu *ZeusUsers) Login(loginRequest *requests.Login) (*string, error) {
 
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/users/login", zu.baseURL), payload)
 	if err != nil {
-		return nil, err
+		return nil, apperrors.NewUnexpectedAppError(err)
 	}
 
 	req.Header.Add("Content-Type", "application/json")
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, apperrors.NewUnexpectedAppError(err)
 	}
 
 	defer func(Body io.ReadCloser) {

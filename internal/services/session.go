@@ -18,5 +18,5 @@ func Login(loginRequest *requests.Login, allClients *clients.All) (*string, erro
 
 	jwt, err := allClients.AuthClient.GenerateJWT(*userID, loginRequest.Username, *scopes)
 
-	return &jwt, nil
+	return &jwt, err
 }

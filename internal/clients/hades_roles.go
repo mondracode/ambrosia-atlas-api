@@ -45,12 +45,12 @@ func (hr *HadesRoles) GetAllUserScopes(userID string) (*[]string, error) {
 func (hr *HadesRoles) GetUserRoles(userID string) (*[]string, error) {
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/roles/user/%s", hr.baseURL, userID), nil)
 	if err != nil {
-		return nil, err
+		return nil, apperrors.NewUnexpectedAppError(err)
 	}
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, apperrors.NewUnexpectedAppError(err)
 	}
 
 	defer func(Body io.ReadCloser) {
@@ -81,12 +81,12 @@ func (hr *HadesRoles) GetUserRoles(userID string) (*[]string, error) {
 func (hr *HadesRoles) GetUserScopes(userID string) (*[]string, error) {
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/scopes/user/%s", hr.baseURL, userID), nil)
 	if err != nil {
-		return nil, err
+		return nil, apperrors.NewUnexpectedAppError(err)
 	}
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, apperrors.NewUnexpectedAppError(err)
 	}
 
 	defer func(Body io.ReadCloser) {
@@ -117,12 +117,12 @@ func (hr *HadesRoles) GetUserScopes(userID string) (*[]string, error) {
 func (hr *HadesRoles) GetRoleScopes(role string) (*[]string, error) {
 	req, err := http.NewRequest("POST", fmt.Sprintf("%s/scopes/role/name/%s", hr.baseURL, role), nil)
 	if err != nil {
-		return nil, err
+		return nil, apperrors.NewUnexpectedAppError(err)
 	}
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return nil, err
+		return nil, apperrors.NewUnexpectedAppError(err)
 	}
 
 	defer func(Body io.ReadCloser) {

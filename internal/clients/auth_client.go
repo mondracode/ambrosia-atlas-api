@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/mondracode/ambrosia-atlas-api/internal/apperrors"
 )
 
 type AuthClient struct {
@@ -28,7 +29,7 @@ func (a *AuthClient) GenerateJWT(userID, username string, scopes []string) (stri
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 	tokenStr, err := token.SignedString(a.jwtPassword)
 	if err != nil {
-		return tokenStr, err
+		return tokenStr, apperrors.NewUnexpectedAppError(err)
 	}
 
 	return tokenStr, nil
