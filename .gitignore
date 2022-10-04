@@ -38,3 +38,6 @@ go.work
 
 # Go sum
 go.sum
+
+# Environment variables
+.env
