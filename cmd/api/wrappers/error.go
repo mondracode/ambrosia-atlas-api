@@ -20,7 +20,7 @@ func ErrorWrapper(f func(c *gin.Context) (interface{}, error)) gin.HandlerFunc {
 					"error":   appError.Error(),
 				})
 			default:
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			}
 			return
 		}
