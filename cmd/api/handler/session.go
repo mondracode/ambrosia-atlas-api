@@ -11,11 +11,11 @@ import (
 )
 
 type Session struct {
-	zeusUsersClient *clients.ZeusUsers
+	allClients *clients.All
 }
 
-func NewSession(zeusUsersClient *clients.ZeusUsers) *Session {
-	return &Session{zeusUsersClient: zeusUsersClient}
+func NewSession(allClients *clients.All) *Session {
+	return &Session{allClients: allClients}
 }
 
 func (handler *Session) Login(ctx *gin.Context) {
@@ -27,12 +27,12 @@ func (handler *Session) Login(ctx *gin.Context) {
 		return
 	}
 
-	err = services.Login(login, handler.zeusUsersClient)
+	jwt, err := services.Login(login, handler.allClients)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"errors": fmt.Sprintf("%v", err)})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, login)
+	ctx.JSON(http.StatusOK, jwt)
 	return
 }

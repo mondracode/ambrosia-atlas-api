@@ -1,17 +1,22 @@
 package services
 
 import (
-	"fmt"
-
 	"github.com/mondracode/ambrosia-atlas-api/internal/clients"
 	"github.com/mondracode/ambrosia-atlas-api/internal/requests"
 )
 
-func Login(loginRequest *requests.Login, zeusUsersClient *clients.ZeusUsers) error {
-	userID, err := zeusUsersClient.Login(loginRequest)
+func Login(loginRequest *requests.Login, allClients *clients.All) (*string, error) {
+	userID, err := allClients.ZeusUsers.Login(loginRequest)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	fmt.Println(fmt.Sprintf("aaaaa userID: %v", *userID))
-	return nil
+
+	scopes, err := allClients.HadesRoles.GetAllUserScopes(*userID)
+	if err != nil {
+		scopes = &[]string{}
+	}
+
+	jwt, err := allClients.AuthClient.GenerateJWT(*userID, loginRequest.Username, *scopes)
+
+	return &jwt, nil
 }

@@ -1,5 +1,7 @@
 package clients
 
 type All struct {
-	ZeusUsers *ZeusUsers
+	ZeusUsers  *ZeusUsers
+	HadesRoles *HadesRoles
+	AuthClient *AuthClient
 }

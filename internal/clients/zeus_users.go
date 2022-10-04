@@ -53,6 +53,10 @@ func (zu *ZeusUsers) Login(loginRequest *requests.Login) (*string, error) {
 		return nil, apperrors.NewUnauthorizedAppError(loginRequest.Username, err)
 	}
 
+	if res.StatusCode != http.StatusOK {
+		return nil, apperrors.NewUnexpectedAppError(err)
+	}
+
 	var loginResponse LoginResponse
 
 	err = UnmarshalBody(res.Body, &loginResponse)

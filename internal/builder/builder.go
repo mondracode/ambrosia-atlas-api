@@ -20,9 +20,13 @@ func goDotEnvVariable(key string) string {
 }
 
 func InitClients() *clients.All {
-	zeusUsersBaseUrl := goDotEnvVariable("ZEUS_USERS_BASE_URL")
+	zeusUsersBaseURL := goDotEnvVariable("ZEUS_USERS_BASE_URL")
+	hadesRolesBaseURL := goDotEnvVariable("HADES_ROLES_BASE_URL")
+	authJWTPassword := goDotEnvVariable("AUTH_JWT_PASSWORD")
 
 	return &clients.All{
-		ZeusUsers: clients.NewZeusUsers(zeusUsersBaseUrl),
+		ZeusUsers:  clients.NewZeusUsers(zeusUsersBaseURL),
+		HadesRoles: clients.NewHadesRoles(hadesRolesBaseURL),
+		AuthClient: clients.NewAuthClient(authJWTPassword),
 	}
 }

@@ -6,12 +6,12 @@ import (
 	"github.com/mondracode/ambrosia-atlas-api/internal/clients"
 )
 
-func SetupEndpoints(AllClients *clients.All) {
+func SetupEndpoints(allClients *clients.All) {
 	router := gin.Default()
 
 	router.GET("/ping", handler.Ping{}.Ping)
 
-	session := handler.NewSession(AllClients.ZeusUsers)
+	session := handler.NewSession(allClients)
 	router.POST("/login", session.Login)
 
 	err := router.Run()
