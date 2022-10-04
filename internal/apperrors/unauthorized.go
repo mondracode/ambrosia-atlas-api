@@ -6,9 +6,5 @@ import (
 )
 
 func NewUnauthorizedAppError(username string, err error) *AppError {
-	return &AppError{
-		HTTPStatusCode: http.StatusUnauthorized,
-		Message:        fmt.Sprintf("%s not authorized", username),
-		WrappedError:   err,
-	}
+	return NewAppError(http.StatusUnauthorized, fmt.Sprintf("%s not authorized", username), err)
 }

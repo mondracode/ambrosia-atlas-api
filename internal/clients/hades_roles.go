@@ -19,31 +19,8 @@ func NewHadesRoles(baseURL string) *HadesRoles {
 	}
 }
 
-func (hr *HadesRoles) GetAllUserScopes(userID string) (*[]string, error) {
-	scopes, err := hr.GetUserScopes(userID)
-	if err != nil {
-		scopes = &[]string{}
-	}
-
-	roles, err := hr.GetUserRoles(userID)
-	if err != nil {
-		roles = &[]string{}
-	}
-
-	for _, role := range *roles {
-		roleScopes, _ := hr.GetRoleScopes(role)
-		*scopes = append(*scopes, *roleScopes...)
-	}
-
-	if len(*scopes) == 0 {
-		return nil, apperrors.NewNotFoundAppError("Scopes in User", userID, nil)
-	}
-
-	return scopes, nil
-}
-
 func (hr *HadesRoles) GetUserRoles(userID string) (*[]string, error) {
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/roles/user/%s", hr.baseURL, userID), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/roles/user/%s", hr.baseURL, userID), nil)
 	if err != nil {
 		return nil, apperrors.NewUnexpectedAppError(err)
 	}
@@ -79,7 +56,7 @@ func (hr *HadesRoles) GetUserRoles(userID string) (*[]string, error) {
 }
 
 func (hr *HadesRoles) GetUserScopes(userID string) (*[]string, error) {
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/scopes/user/%s", hr.baseURL, userID), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/scopes/user/%s", hr.baseURL, userID), nil)
 	if err != nil {
 		return nil, apperrors.NewUnexpectedAppError(err)
 	}
@@ -115,7 +92,7 @@ func (hr *HadesRoles) GetUserScopes(userID string) (*[]string, error) {
 }
 
 func (hr *HadesRoles) GetRoleScopes(role string) (*[]string, error) {
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/scopes/role/name/%s", hr.baseURL, role), nil)
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/scopes/role/name/%s", hr.baseURL, role), nil)
 	if err != nil {
 		return nil, apperrors.NewUnexpectedAppError(err)
 	}

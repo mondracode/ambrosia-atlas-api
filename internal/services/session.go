@@ -11,7 +11,7 @@ func Login(loginRequest *requests.Login, allClients *clients.All) (*string, erro
 		return nil, err
 	}
 
-	scopes, err := allClients.HadesRoles.GetAllUserScopes(*userID)
+	scopes, err := allClients.HadesRoles.GetUserScopes(*userID)
 	if err != nil {
 		scopes = &[]string{}
 	}

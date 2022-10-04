@@ -5,9 +5,5 @@ import (
 )
 
 func NewUnexpectedAppError(err error) *AppError {
-	return &AppError{
-		HTTPStatusCode: http.StatusInternalServerError,
-		Message:        "Unknown error",
-		WrappedError:   err,
-	}
+	return NewAppError(http.StatusInternalServerError, "Unknown error", err)
 }

@@ -6,7 +6,15 @@ type AppError struct {
 	WrappedError   error  `json:"-"`
 }
 
-func (a *AppError) Error() string {
+func NewAppError(httpStatusCode int, message string, wrappedError error) *AppError {
+	return &AppError{
+		HTTPStatusCode: httpStatusCode,
+		Message:        message,
+		WrappedError:   wrappedError,
+	}
+}
+
+func (a AppError) Error() string {
 	msg := a.Message
 
 	if a.WrappedError != nil {
