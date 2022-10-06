@@ -16,10 +16,10 @@ func NewSession(allClients *clients.All) *Session {
 	return &Session{allClients: allClients}
 }
 
-func (handler *Session) Login(ctx *gin.Context) (interface{}, error) {
+func (handler *Session) Login(c *gin.Context) (interface{}, error) {
 	login := &requests.Login{}
 
-	err := ctx.ShouldBind(&login)
+	err := c.ShouldBind(&login)
 	if err != nil {
 		return nil, apperrors.NewBadRequestAppError(err)
 	}

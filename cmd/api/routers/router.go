@@ -10,13 +10,19 @@ import (
 func SetupEndpoints(allClients *clients.All) {
 	router := gin.Default()
 
-	router.GET("/ping", handlers.Ping{}.Ping)
+	eW := wrappers.NewErrorWrapper()
+	aW := wrappers.NewAuthWrapper(allClients)
+
+	ping := handlers.NewPing()
+	router.GET("/ping", eW.Wrapper(ping.Ping))
+	router.GET("/auth/ping", eW.Wrapper(aW.Wrapper(ping.Ping, "69_NICE")))
 
 	session := handlers.NewSession(allClients)
-	router.POST("/login", wrappers.ErrorWrapper(session.Login))
+	router.POST("/login", eW.Wrapper(session.Login))
 
 	err := router.Run()
 	if err != nil {
 		return
 	}
+
 }

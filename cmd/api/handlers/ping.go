@@ -1,14 +1,16 @@
 package handlers
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 )
 
 type Ping struct {
 }
 
-func (handler Ping) Ping(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, "pong")
+func NewPing() *Ping {
+	return &Ping{}
+}
+
+func (handler Ping) Ping(c *gin.Context) (interface{}, error) {
+	return "pong", nil
 }

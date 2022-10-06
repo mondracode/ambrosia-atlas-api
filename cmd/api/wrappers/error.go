@@ -8,7 +8,13 @@ import (
 	"github.com/mondracode/ambrosia-atlas-api/internal/apperrors"
 )
 
-func ErrorWrapper(f func(c *gin.Context) (interface{}, error)) gin.HandlerFunc {
+type ErrorWrapper struct{}
+
+func NewErrorWrapper() *ErrorWrapper {
+	return &ErrorWrapper{}
+}
+
+func (e ErrorWrapper) Wrapper(f func(c *gin.Context) (interface{}, error)) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		response, err := f(c)
 		if err != nil {
@@ -16,8 +22,8 @@ func ErrorWrapper(f func(c *gin.Context) (interface{}, error)) gin.HandlerFunc {
 			switch {
 			case errors.As(err, &appError):
 				c.JSON(appError.HTTPStatusCode, gin.H{
-					"message": appError.Message,
-					"error":   appError.Error(),
+					"message": appError.Error(),
+					"error":   appError.ErrorType,
 				})
 			default:
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
