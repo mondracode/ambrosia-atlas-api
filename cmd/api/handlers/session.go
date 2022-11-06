@@ -24,10 +24,10 @@ func (handler *Session) Login(c *gin.Context) (interface{}, error) {
 		return nil, apperrors.NewBadRequestAppError(err)
 	}
 
-	jwt, err := services.Login(login, handler.allClients)
+	completeLogin, err := services.Login(login, handler.allClients)
 	if err != nil {
 		return nil, err
 	}
 
-	return jwt, err
+	return completeLogin, err
 }
