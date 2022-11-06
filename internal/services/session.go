@@ -3,20 +3,32 @@ package services
 import (
 	"github.com/mondracode/ambrosia-atlas-api/internal/clients"
 	"github.com/mondracode/ambrosia-atlas-api/internal/requests"
+	"github.com/mondracode/ambrosia-atlas-api/internal/responses"
 )
 
-func Login(loginRequest *requests.Login, allClients *clients.All) (*string, error) {
-	userID, err := allClients.ZeusUsers.Login(loginRequest)
+func Login(loginRequest *requests.Login, allClients *clients.All) (*responses.CompleteLogin, error) {
+	loginInfo, err := allClients.ZeusUsers.Login(loginRequest)
 	if err != nil {
 		return nil, err
 	}
 
-	scopes, err := allClients.HadesRoles.GetUserScopes(*userID)
+	roles, err := allClients.HadesRoles.GetUserRoles(*loginInfo.UserID)
+	scopes, err := allClients.HadesRoles.GetUserScopes(*loginInfo.UserID)
 	if err != nil {
-		scopes = &[]string{}
+		scopes = &responses.Scopes{}
 	}
 
-	jwt, err := allClients.AuthClient.GenerateJWT(*userID, loginRequest.Username, *scopes)
+	jwt, err := allClients.AuthClient.GenerateJWT(*loginInfo, *roles.Roles, *scopes.Scopes)
+	if err != nil {
+		return nil, err
+	}
 
-	return &jwt, err
+	completeLogin := responses.CompleteLogin{
+		ZeusLogin: loginInfo,
+		Roles:     roles,
+		Scopes:    scopes,
+		AuthToken: jwt,
+	}
+
+	return &completeLogin, nil
 }

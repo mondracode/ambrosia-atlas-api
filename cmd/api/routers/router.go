@@ -20,6 +20,9 @@ func SetupEndpoints(allClients *clients.All) {
 	session := handlers.NewSession(allClients)
 	router.POST("/login", errW.Wrapper(session.Login))
 
+	gateway := handlers.NewGateway(allClients)
+	router.POST("/graphql", errW.Wrapper(authW.Wrapper(gateway.UseGateway, "")))
+
 	err := router.Run()
 	if err != nil {
 		return

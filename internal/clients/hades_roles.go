@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/mondracode/ambrosia-atlas-api/internal/apperrors"
+	"github.com/mondracode/ambrosia-atlas-api/internal/responses"
 )
 
 type HadesRoles struct {
@@ -19,8 +20,8 @@ func NewHadesRoles(baseURL string) *HadesRoles {
 	}
 }
 
-func (hr *HadesRoles) GetUserRoles(userID string) (*[]string, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/roles/user/%s", hr.baseURL, userID), nil)
+func (hr *HadesRoles) GetUserRoles(userID string) (*responses.Roles, error) {
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/roles/user/%s", hr.baseURL, userID), nil)
 	if err != nil {
 		return nil, apperrors.NewUnexpectedAppError(err)
 	}
@@ -45,18 +46,18 @@ func (hr *HadesRoles) GetUserRoles(userID string) (*[]string, error) {
 		return nil, apperrors.NewUnexpectedAppError(err)
 	}
 
-	var userRolesResponse RolesResponse
+	var userRolesResponse responses.Roles
 
 	err = UnmarshalBody(res.Body, &userRolesResponse)
 	if err != nil {
 		return nil, err
 	}
 
-	return userRolesResponse.Roles, nil
+	return &userRolesResponse, nil
 }
 
-func (hr *HadesRoles) GetUserScopes(userID string) (*[]string, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/scopes/user/%s", hr.baseURL, userID), nil)
+func (hr *HadesRoles) GetUserScopes(userID string) (*responses.Scopes, error) {
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/scopes/user/%s", hr.baseURL, userID), nil)
 	if err != nil {
 		return nil, apperrors.NewUnexpectedAppError(err)
 	}
@@ -81,18 +82,18 @@ func (hr *HadesRoles) GetUserScopes(userID string) (*[]string, error) {
 		return nil, apperrors.NewUnexpectedAppError(err)
 	}
 
-	var userScopesResponse ScopesResponse
+	var userScopesResponse responses.Scopes
 
 	err = UnmarshalBody(res.Body, &userScopesResponse)
 	if err != nil {
 		return nil, err
 	}
 
-	return userScopesResponse.Scopes, nil
+	return &userScopesResponse, nil
 }
 
 func (hr *HadesRoles) GetRoleScopes(role string) (*[]string, error) {
-	req, err := http.NewRequest("GET", fmt.Sprintf("%s/scopes/role/name/%s", hr.baseURL, role), nil)
+	req, err := http.NewRequest(http.MethodGet, fmt.Sprintf("%s/scopes/role/name/%s", hr.baseURL, role), nil)
 	if err != nil {
 		return nil, apperrors.NewUnexpectedAppError(err)
 	}
@@ -117,7 +118,7 @@ func (hr *HadesRoles) GetRoleScopes(role string) (*[]string, error) {
 		return nil, apperrors.NewUnexpectedAppError(err)
 	}
 
-	var roleScopesResponse ScopesResponse
+	var roleScopesResponse responses.Scopes
 
 	err = UnmarshalBody(res.Body, &roleScopesResponse)
 	if err != nil {
@@ -125,12 +126,4 @@ func (hr *HadesRoles) GetRoleScopes(role string) (*[]string, error) {
 	}
 
 	return roleScopesResponse.Scopes, nil
-}
-
-type RolesResponse struct {
-	Roles *[]string `json:"roles"`
-}
-
-type ScopesResponse struct {
-	Scopes *[]string `json:"scopes"`
 }

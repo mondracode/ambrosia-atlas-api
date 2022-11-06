@@ -7,6 +7,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/mondracode/ambrosia-atlas-api/internal/apperrors"
 	"github.com/mondracode/ambrosia-atlas-api/internal/models"
+	"github.com/mondracode/ambrosia-atlas-api/internal/responses"
 	"golang.org/x/exp/slices"
 )
 
@@ -20,7 +21,7 @@ func NewAuthClient(jwtPassword string) *AuthClient {
 	}
 }
 
-func (a *AuthClient) GenerateJWT(userID, username string, scopes []string) (string, error) {
+func (a *AuthClient) GenerateJWT(loginInfo responses.ZeusLogin, roles, scopes []string) (*string, error) {
 
 	claims := models.JWTClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
@@ -28,18 +29,18 @@ func (a *AuthClient) GenerateJWT(userID, username string, scopes []string) (stri
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 		},
-		UserID:   userID,
-		Username: username,
-		Scopes:   scopes,
+		ZeusLogin: loginInfo,
+		Roles:     roles,
+		Scopes:    scopes,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenStr, err := token.SignedString(a.jwtPassword)
 	if err != nil {
-		return tokenStr, apperrors.NewUnexpectedAppError(err)
+		return nil, apperrors.NewUnexpectedAppError(err)
 	}
 
-	return tokenStr, nil
+	return &tokenStr, nil
 }
 
 func (a *AuthClient) ValidateJWT(bearerJWT, scopeRequired string) error {
@@ -47,12 +48,16 @@ func (a *AuthClient) ValidateJWT(bearerJWT, scopeRequired string) error {
 		return a.jwtPassword, nil
 	})
 
+	if err != nil {
+		return apperrors.NewBadRequestAppError(err)
+	}
+
 	claims, ok := token.Claims.(*models.JWTClaims)
 
 	hasScopeRequired := slices.Contains(claims.Scopes, strings.ToUpper(scopeRequired))
 
 	if !(ok && token.Valid && hasScopeRequired) {
-		return apperrors.NewUnauthorizedAppError(claims.Username, err)
+		return apperrors.NewUnauthorizedAppError(*claims.ZeusLogin.Username, err)
 	}
 
 	return nil

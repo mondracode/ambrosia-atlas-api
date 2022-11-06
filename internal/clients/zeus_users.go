@@ -5,10 +5,10 @@ import (
 	"io"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/mondracode/ambrosia-atlas-api/internal/apperrors"
 	"github.com/mondracode/ambrosia-atlas-api/internal/requests"
+	"github.com/mondracode/ambrosia-atlas-api/internal/responses"
 )
 
 type ZeusUsers struct {
@@ -21,16 +21,8 @@ func NewZeusUsers(baseURL string) *ZeusUsers {
 	}
 }
 
-func (zu *ZeusUsers) Login(loginRequest *requests.Login) (*string, error) {
-	payload := strings.NewReader(
-		fmt.Sprintf(
-			"{\"username\": \"%s\", \"password\": \"%s\"}",
-			loginRequest.Username,
-			loginRequest.Password,
-		),
-	)
-
-	req, err := http.NewRequest("POST", fmt.Sprintf("%s/users/login", zu.baseURL), payload)
+func (zu *ZeusUsers) Login(loginRequest *requests.Login) (*responses.ZeusLogin, error) {
+	req, err := http.NewRequest(http.MethodPost, fmt.Sprintf("%s/users/login", zu.baseURL), requests.ToJSONBuffer(loginRequest))
 	if err != nil {
 		return nil, apperrors.NewUnexpectedAppError(err)
 	}
@@ -57,17 +49,12 @@ func (zu *ZeusUsers) Login(loginRequest *requests.Login) (*string, error) {
 		return nil, apperrors.NewUnexpectedAppError(err)
 	}
 
-	var loginResponse LoginResponse
+	var loginResponse responses.ZeusLogin
 
 	err = UnmarshalBody(res.Body, &loginResponse)
 	if err != nil {
 		return nil, err
 	}
 
-	return loginResponse.UserID, err
-
-}
-
-type LoginResponse struct {
-	UserID *string `json:"user_id"`
+	return &loginResponse, err
 }
