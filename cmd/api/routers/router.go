@@ -15,13 +15,13 @@ func SetupEndpoints(allClients *clients.All) {
 
 	ping := handlers.NewPing()
 	router.GET("/ping", errW.Wrapper(ping.Ping))
-	router.GET("/auth/ping", errW.Wrapper(authW.Wrapper(ping.Ping, "69_NICE")))
+	router.GET("/auth/ping", errW.Wrapper(authW.Wrapper(ping.Ping)))
 
 	session := handlers.NewSession(allClients)
 	router.POST("/login", errW.Wrapper(session.Login))
 
 	gateway := handlers.NewGateway(allClients)
-	router.POST("/graphql", errW.Wrapper(authW.Wrapper(gateway.UseGateway, "")))
+	router.POST("/graphql", errW.Wrapper(authW.Wrapper(gateway.UseGateway)))
 
 	err := router.Run()
 	if err != nil {

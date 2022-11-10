@@ -17,7 +17,7 @@ func NewAuthWrapper(allClients *clients.All) *AuthWrapper {
 	return &AuthWrapper{AllClients: allClients}
 }
 
-func (a AuthWrapper) Wrapper(f func(c *gin.Context) (interface{}, error), scopeRequired string) func(c *gin.Context) (interface{}, error) {
+func (a AuthWrapper) Wrapper(f func(c *gin.Context) (interface{}, error)) func(c *gin.Context) (interface{}, error) {
 	return func(c *gin.Context) (interface{}, error) {
 		authHeader := c.GetHeader("Authorization")
 		if !strings.HasPrefix(authHeader, "Bearer ") {
@@ -26,7 +26,7 @@ func (a AuthWrapper) Wrapper(f func(c *gin.Context) (interface{}, error), scopeR
 
 		bearerToken := strings.TrimPrefix(authHeader, "Bearer ")
 
-		err := a.AllClients.AuthClient.ValidateJWT(bearerToken, scopeRequired)
+		err := a.AllClients.AuthClient.ValidateJWT(bearerToken)
 		if err != nil {
 			return nil, err
 		}

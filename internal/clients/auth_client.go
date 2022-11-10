@@ -1,14 +1,12 @@
 package clients
 
 import (
-	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/mondracode/ambrosia-atlas-api/internal/apperrors"
 	"github.com/mondracode/ambrosia-atlas-api/internal/models"
 	"github.com/mondracode/ambrosia-atlas-api/internal/responses"
-	"golang.org/x/exp/slices"
 )
 
 type AuthClient struct {
@@ -43,7 +41,7 @@ func (a *AuthClient) GenerateJWT(loginInfo responses.ZeusLogin, roles, scopes []
 	return &tokenStr, nil
 }
 
-func (a *AuthClient) ValidateJWT(bearerJWT, scopeRequired string) error {
+func (a *AuthClient) ValidateJWT(bearerJWT string) error {
 	token, err := jwt.ParseWithClaims(bearerJWT, &models.JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return a.jwtPassword, nil
 	})
@@ -54,9 +52,7 @@ func (a *AuthClient) ValidateJWT(bearerJWT, scopeRequired string) error {
 
 	claims, ok := token.Claims.(*models.JWTClaims)
 
-	hasScopeRequired := slices.Contains(claims.Scopes, strings.ToUpper(scopeRequired))
-
-	if !(ok && token.Valid && hasScopeRequired) {
+	if !(ok && token.Valid) {
 		return apperrors.NewUnauthorizedAppError(*claims.ZeusLogin.Username, err)
 	}
 
